@@ -1,0 +1,8 @@
+/Data
+/Analyse_2MWT_data
+.DS_Store
+.pyc
+/Models
+/vent
+
+*.pyc
