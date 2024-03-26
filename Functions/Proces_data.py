@@ -5,8 +5,8 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy import signal
 import scipy
-
 
 def filt_band(norm_data,  samplefreq=0.01, cutoff_h=5, cutoff_l=0.01, order=1):
     '''
@@ -99,7 +99,7 @@ def correct_format(latent_layer, mse):
         
     # Add gait speed healthy
     sensor_healthy = pd.read_excel(
-        '/Users/richard/Desktop/Variational autoencoder/Data/Sensor_data_outcomes/Healthy.xlsx')
+        'Data/Sensor_data_outcomes/Healthy.xlsx')
     sensor_healthy.rename(columns={'Subjectnumber': 'Subj',
                                        'TestType': 'T'}, inplace=True)
     df_latent.loc[df_latent['Subj'].isin(
@@ -135,7 +135,7 @@ def proces_data(path, visualise=False):
         if (file.endswith('.csv') and ((file.startswith('S') or file.startswith('H')))):
             try:
                 data = pd.read_csv(f'{path}/{file}', index_col=0)
-                data = scipy.signal.resample(data, 512)
+                data = signal.resample(data, 512)
                 if data[:, 0].mean() < 0:
                     data[:, [0, 1, 3, 4]] *= -1
                 data = pd.DataFrame(data, columns=columns)
@@ -197,10 +197,14 @@ def proces_data(path, visualise=False):
     data_np = np.moveaxis(data_np, 2, +1)
 
     # Normalise acceleration signals to -1, 1
+    # MIN data_np[:, :512, :3].min()
+    # MAX data_np[:, :512, :3].max()
     data_np[:, :512, :3] = (data_np[:, :512, :3] - data_np[:, :512, :3].min()) / \
         (data_np[:, :512, :3].max() -
             data_np[:, :512, :3].min()) * 2 - 1
 
+    # MIN data_np[:, :512, 3:].min()
+    # MAX data_np[:, :512, 3:].max()
     # Normalisation gyroscope signals to -1,1
     data_np[:, :512, 3:] = (data_np[:, :512, 3:] - data_np[:, :512, 3:].min()) / \
         (data_np[:, :512, 3:].max() -

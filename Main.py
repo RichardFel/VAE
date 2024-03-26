@@ -31,19 +31,19 @@ from Functions.Visualise import original_reconstructed, violin, visualise_n_late
 from Functions.ICC import calc_icc
 from Functions.Progression import progression
 from Functions.To_latex import to_latex
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 
 # General settings
 epochLength = 512
-path = '/Users/richard/Desktop/Variational autoencoder/Data/Processed_data/512_2023_03_17'
+path = 'Data/Processed_data/512_2023_03_17'
 numberOfColumns = 6
-latentFeatures = 15
+latentFeatures = 12
 trainModel = True
 
 # %%
 ###### proces and save data ######
 # Uncomment this to create a new dataset
-# proces_data(path, visualise=False)
+proces_data(path, visualise=False)
 data_np = np.load('Data/Predicted_data/512.npy', allow_pickle=True)
 
 # Use only data of stroke
@@ -91,18 +91,26 @@ reconstructed_data = decoder.predict(latent_layer[:, 7:])
 
 # Calculate error
 mse = np.zeros(len(data_np))
+# mse_acc = np.zeros(len(data_np))
+# mse_gyr  = np.zeros(len(data_np))
 for i in range(len(data_np)):
     mse[i] = mean_squared_error(data_np[i, :512, :], reconstructed_data[i])
+    # mse_acc[i] = mean_absolute_error(data_np[i, :512, 0:3], reconstructed_data[i,:, 0:3])
+    # mse_gyr[i] = mean_absolute_error(data_np[i, :512, 3:6], reconstructed_data[i,:, 3:6])
+
+# print(f'Mean error acceleration {np.mean(mse_acc)*4} std: ({np.std(mse_acc)*4})')
+# print(f'Mean error angular velocity {np.mean(mse_gyr)*13} std: ({np.std(mse_gyr)*13})')
+
 
 # Visualise data
-# original_reconstructed(data_np, reconstructed_data)
+original_reconstructed(data_np, reconstructed_data)
 
 # Correct format latent layer
 latent_features = latent_layer.shape[1] - 7
 df_latent = correct_format(latent_layer, mse)
 
 # make histplot mse
-# histplot_hs(df_latent)
+histplot_hs(df_latent)
 
 # Calculate ICC-values
 calc_icc(df_latent, latent_features, side='R', per_n_measurement=50)
@@ -117,5 +125,8 @@ violin(df_latent, columns=df_latent.columns[5:-1].values)
 
 # Print infomration to LaTeX
 to_latex(df_latent, per_n_measurement=50)
+
+df_latent.corr().round(2).to_excel('Results/Correlation/correlation.xlsx')
+
 
 # %%

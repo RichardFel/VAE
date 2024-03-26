@@ -16,8 +16,11 @@ sns.set_style("white")
 
 def histplot_hs(df_latent):
     fig, ax = plt.subplots(figsize = (16,12))
-    sns.histplot(data=df_latent, x='MSE', hue='condition', kde=True, ax = ax)
-    mylabels = ['Healthy', 'Stroke']
+    sns.histplot(data=df_latent.loc[df_latent['condition'] == 'S'], x='MSE',
+                 ax=ax,  stat='density', bins=100, kde = True)
+    sns.histplot(data=df_latent.loc[df_latent['condition'] == 'H'], x='MSE',
+                 ax=ax,  stat='density', bins=100, kde=True)
+    mylabels = ['Stroke', 'Healthy']
     ax.legend(labels=mylabels)
     fig.savefig('Figures/histogram_h_s.png')
 
@@ -95,10 +98,44 @@ def violin(df_latent, columns):
 
     fig, ax = plt.subplots(2,figsize=(16, 12))
     sns.violinplot(data=first, y='value', x='Variable',
-                   hue='Groups', split=True, ax=ax[0])
+                   hue='Groups', split=True, ax=ax[0], inner=None)
+    ax[0].legend(loc='upper right')
     sns.violinplot(data=second, y='value', x='Variable',
-                   hue='Groups', split=True, ax=ax[1])
+                   hue='Groups', split=True, ax=ax[1], inner=None)
+    ax[1].legend(loc='upper right')
     fig.savefig('Figures/violin.png')
+
+def tmp(data_np):
+    import matplotlib.pyplot as plt
+    plt.rcParams.update({'font.size': 22})
+    epochLength = 512
+    sample_freq = 100
+    file = np.random.randint(data_np.shape[0])
+
+    # Define x-axis in time per second
+    x_axis = np.arange(epochLength) / sample_freq
+
+    # Top panel original signal, bottom panel reconstructed signal
+    fig, ax = plt.subplots(3, figsize=(8, 6))
+    ax[0].plot(x_axis, data_np[3164, :epochLength, 1])
+    ax[1].plot(x_axis, data_np[3164, :epochLength, 1])
+    ax[2].plot(x_axis, data_np[3164, :epochLength, 1])
+    ax[0].legend(['Acceleration Anterior-Posterior'],
+                       loc='upper center',
+                       bbox_to_anchor=(0.5, 2.0),
+                       ncol=6,
+                       fancybox=True)
+    # ax[0].set_ylim(-1, 1)
+    # ax.set_title('Acceleration', fontsize=20)
+    # ax[0].tick_params(axis='both', which='major', labelsize=16)
+    ax[1].set_ylabel('Normalised acceleration [G]')
+    ax[0].set_xticks([])
+    ax[1].set_xticks([])
+    ax[0].set_xlabel('')
+    ax[1].set_xlabel('')
+    ax[2].set_xlabel('Time in seconds')
+    fig.tight_layout()
+    fig.savefig('SampleData.png', dpi = 300)
     
 def original_reconstructed(data_np, reconstructed_data):
     epochLength = 512
@@ -112,23 +149,34 @@ def original_reconstructed(data_np, reconstructed_data):
     fig, ax = plt.subplots(2, figsize=(12, 8))
 
     # Top panel
-    ax[0].plot(x_axis, data_np[file, :epochLength, :])
-    leg = ax[0].legend(['Ax', 'Ay', 'Az', 'Gx', 'Gy', 'Gz'],
+    colors = ['tab:red', 'tab:blue', 'tab:green']
+    for i in range(data_np[file, :epochLength, :3].shape[1]):
+        ax[0].plot(x_axis, data_np[file, :epochLength, i], color = colors[i])
+    for i in range(data_np[file, :epochLength, :3].shape[1]):
+        ax[0].plot(x_axis, reconstructed_data[file,
+               :epochLength, i], linestyle='dashed', color = colors[i])
+    leg = ax[0].legend(['Ax', 'Ay', 'Az'],
                        loc='upper center',
                        bbox_to_anchor=(0.5, 1),
                        ncol=6,
                        fancybox=True,
                        fontsize=16)
-    ax[0].set_ylim(-1, 1)
-    ax[0].set_title('Original signal', fontsize=20)
+    # ax[0].set_ylim(-1, 1)
+    ax[0].set_title('Acceleration', fontsize=20)
     ax[0].tick_params(axis='both', which='major', labelsize=16)
+    ax[0].set_ylabel('Normalised values', fontsize=16)
 
     # Bottom panel
-    ax[1].plot(x_axis, reconstructed_data[file, :epochLength, :])
-    ax[1].set_ylim(-1, 1)
-    ax[1].set_title('Reconstructed signal', fontsize=20)
-    ax[1].set_xlabel('Time [s]', fontsize=16)
-    leg = ax[1].legend(['Ax', 'Ay', 'Az', 'Gx', 'Gy', 'Gz'],
+    for i in range(data_np[file, :epochLength, :3].shape[1]):
+        ax[1].plot(x_axis, data_np[file, :epochLength, i+3], color=colors[i])
+    for i in range(data_np[file, :epochLength, :3].shape[1]):
+        ax[1].plot(x_axis, reconstructed_data[file,
+                                              :epochLength, i+3], linestyle='dashed', color=colors[i])
+    # ax[1].set_ylim(-1, 1)
+    ax[1].set_title('Angular velocity', fontsize=20)
+    ax[1].set_xlabel('Time in seconds', fontsize=16)
+    ax[1].set_ylabel('Normalised values', fontsize=16)
+    leg = ax[1].legend(['Gx', 'Gy', 'Gz'],
                        loc='upper center',
                        bbox_to_anchor=(0.5, 1),
                        ncol=6,

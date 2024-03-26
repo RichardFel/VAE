@@ -55,6 +55,8 @@ def characteristics(df_latent):
     last = df_latent.loc[df_latent['Moment'] == 'last']
     diff = first.merge(last, on=['Subj', 'Aid'],
                        how='left', suffixes=(None, '_last')).dropna(subset = ['L0'])
+    first = first.loc[first['Subj'].isin(last['Subj'])]
+
     # check how many participants improved on gait
     column = 'KMPH R'
     mdc = 0.494 /3.6
