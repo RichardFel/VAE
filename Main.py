@@ -43,7 +43,7 @@ trainModel = True
 # %%
 ###### proces and save data ######
 # Uncomment this to create a new dataset
-proces_data(path, visualise=False)
+# proces_data(path, visualise=False)
 data_np = np.load('Data/Predicted_data/512.npy', allow_pickle=True)
 
 # Use only data of stroke
