@@ -1,0 +1,14 @@
+cff-version: 1.0.4
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Felius
+    given-names: Richard
+    orcid: https://orcid.org/0000-0001-8904-1471
+    Researchgate: https://www.researchgate.net/profile/Richard-Felius
+title: "Data and algorithms used for the study: 
+"Exploring Unsupervised Feature Extraction of IMU-Based Gait Data in Stroke Rehabilitation using a Variational Autoencoder"
+version: 1.0.4
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.11044903
+date-released: 2024-04-23
