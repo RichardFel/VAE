@@ -5,8 +5,7 @@ authors:
     given-names: Richard
     orcid: https://orcid.org/0000-0001-8904-1471
     Researchgate: https://www.researchgate.net/profile/Richard-Felius
-title: "Data and algorithms used for the study: 
-"Exploring Unsupervised Feature Extraction of IMU-Based Gait Data in Stroke Rehabilitation using a Variational Autoencoder"
+title: "Data and algorithms used for the study: Exploring Unsupervised Feature Extraction of IMU-Based Gait Data in Stroke Rehabilitation using a Variational Autoencoder
 version: 1.0.4
 identifiers:
   - type: doi
